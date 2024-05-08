@@ -1,0 +1,29 @@
+var scrollIntervalId; // Declare a global variable to hold the interval ID
+
+function scrollToFirstTweet() {
+    let attemptCounter = 0;
+    const maxAttempts = 100; // Maximum number of times to attempt loading new tweets (to avoid potential infinite loops).
+
+    function scrollDown() {
+        window.scrollTo(0, document.body.scrollHeight); // Scroll to bottom of the page
+        console.log('Scrolled to bottom, waiting for tweets to load...');
+    }
+
+    function checkLoadingComplete() {
+        const loadingComplete = document.body.textContent.includes("You’re caught up") ||
+                                document.body.textContent.includes("You’re all caught up") ||
+                                document.querySelector('[aria-label="Timeline: Your Tweet timeline"] > div > div')?.children.length < 3;
+
+        if (loadingComplete || attemptCounter >= maxAttempts) {
+            console.log('No more tweets to load or maximum attempts reached.');
+            clearInterval(scrollIntervalId); // Stop the interval using the stored interval ID
+        } else {
+            scrollDown();
+            attemptCounter++;
+        }
+    }
+
+    scrollIntervalId = setInterval(checkLoadingComplete, 1500); // Change between 1000 - 3000 milliseconds (1 - 3 seconds ) depending on your connection
+}
+
+scrollToFirstTweet();
